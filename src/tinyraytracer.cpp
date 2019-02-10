@@ -23,8 +23,7 @@ struct Sphere
     t0        = tca - thc;
     float t1  = tca + thc;
     if (t0 < 0) t0 = t1;
-    if (t0 < 0) return false;
-    return true;
+    return t0 >= 0;
   }
 };
 
@@ -33,16 +32,16 @@ Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir, Sphere const& sphere)
   float sphere_dist = std::numeric_limits<float>::max();
   if (!sphere.ray_intersect(orig, dir, sphere_dist))
   {
-    return Vec3f(0.2, 0.7, 0.8);  // background color
+    return Vec3f(0.2f, 0.7f, 0.8f);  // background color
   }
-  return Vec3f(0.4, 0.4, 0.3);
+  return Vec3f(0.4f, 0.4f, 0.3f);
 }
 
 void render(Sphere const& sphere)
 {
   int const          width  = 1024;
   int const          height = 768;
-  int const          fov    = M_PI / 2.;
+  auto               fov    = static_cast<int const>(M_PI / 2.);
   std::vector<Vec3f> framebuffer(width * height);
 
 #pragma omp parallel for
@@ -50,10 +49,11 @@ void render(Sphere const& sphere)
   {
     for (auto i = 0; i < width; i++)
     {
-      float x = (2 * (i + 0.5) / (float)width - 1) * tan(fov / 2.) * width /
-                (float)height;
-      float y   = -(2 * (j + 0.5) / (float)height - 1) * tan(fov / 2.);
-      Vec3f dir = Vec3f(x, y, -1).normalize();
+      auto x = (2 * (i + 0.5) / static_cast<float>(width) - 1) *
+               tan(fov / 2.f) * width / static_cast<float>(height);
+      auto y =
+          -(2 * (j + 0.5) / static_cast<float>(height) - 1) * tan(fov / 2.f);
+      Vec3f dir                  = Vec3f(x, y, -1).normalize();
       framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), dir, sphere);
     }
   }
