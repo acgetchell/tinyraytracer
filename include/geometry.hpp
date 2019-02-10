@@ -15,15 +15,15 @@ struct vec
 {
   vec()
   {
-    for (size_t i = DIM; i--; data_[i] = T())
+    for (auto i = DIM; i--; data_[i] = T())
       ;
   }
-  T& operator[](const size_t i)
+  T& operator[](size_t const i)
   {
     assert(i < DIM);
     return data_[i];
   }
-  const T& operator[](const size_t i) const
+  T const& operator[](size_t const i) const
   {
     assert(i < DIM);
     return data_[i];
@@ -44,13 +44,13 @@ struct vec<2, T>
   vec() : x(T()), y(T()) {}
   vec(T X, T Y) : x(X), y(Y) {}
   template <class U>
-  vec<2, T>(const vec<2, U>& v);
-  T& operator[](const size_t i)
+  vec<2, T>(vec<2, U> const& v);
+  T& operator[](size_t const i)
   {
     assert(i < 2);
     return i <= 0 ? x : y;
   }
-  const T& operator[](const size_t i) const
+  T const& operator[](size_t const i) const
   {
     assert(i < 2);
     return i <= 0 ? x : y;
@@ -64,12 +64,12 @@ struct vec<3, T>
 {
   vec() : x(T()), y(T()), z(T()) {}
   vec(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
-  T& operator[](const size_t i)
+  T& operator[](size_t const i)
   {
     assert(i < 3);
     return i <= 0 ? x : (1 == i ? y : z);
   }
-  const T& operator[](const size_t i) const
+  T const& operator[](size_t const i) const
   {
     assert(i < 3);
     return i <= 0 ? x : (1 == i ? y : z);
@@ -89,12 +89,12 @@ struct vec<4, T>
 {
   vec() : x(T()), y(T()), z(T()), w(T()) {}
   vec(T X, T Y, T Z, T W) : x(X), y(Y), z(Z), w(W) {}
-  T& operator[](const size_t i)
+  T& operator[](size_t const i)
   {
     assert(i < 4);
     return i <= 0 ? x : (1 == i ? y : (2 == i ? z : w));
   }
-  const T& operator[](const size_t i) const
+  T const& operator[](size_t const i) const
   {
     assert(i < 4);
     return i <= 0 ? x : (1 == i ? y : (2 == i ? z : w));
@@ -104,41 +104,41 @@ struct vec<4, T>
 };
 
 template <size_t DIM, typename T>
-T operator*(const vec<DIM, T>& lhs, const vec<DIM, T>& rhs)
+T operator*(vec<DIM, T> const& lhs, vec<DIM, T> const& rhs)
 {
   T ret = T();
-  for (size_t i = DIM; i--; ret += lhs[i] * rhs[i])
+  for (auto i = DIM; i--; ret += lhs[i] * rhs[i])
     ;
   return ret;
 }
 
 template <size_t DIM, typename T>
-vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
+vec<DIM, T> operator+(vec<DIM, T> lhs, vec<DIM, T> const& rhs)
 {
-  for (size_t i = DIM; i--; lhs[i] += rhs[i])
+  for (auto i = DIM; i--; lhs[i] += rhs[i])
     ;
   return lhs;
 }
 
 template <size_t DIM, typename T>
-vec<DIM, T> operator-(vec<DIM, T> lhs, const vec<DIM, T>& rhs)
+vec<DIM, T> operator-(vec<DIM, T> lhs, vec<DIM, T> const& rhs)
 {
-  for (size_t i = DIM; i--; lhs[i] -= rhs[i])
+  for (auto i = DIM; i--; lhs[i] -= rhs[i])
     ;
   return lhs;
 }
 
 template <size_t DIM, typename T, typename U>
-vec<DIM, T> operator*(const vec<DIM, T>& lhs, const U& rhs)
+vec<DIM, T> operator*(vec<DIM, T> const& lhs, U const& rhs)
 {
   vec<DIM, T> ret;
-  for (size_t i = DIM; i--; ret[i] = lhs[i] * rhs)
+  for (auto i = DIM; i--; ret[i] = lhs[i] * rhs)
     ;
   return ret;
 }
 
 template <size_t DIM, typename T>
-vec<DIM, T> operator-(const vec<DIM, T>& lhs)
+vec<DIM, T> operator-(vec<DIM, T> const& lhs)
 {
   return lhs * T(-1);
 }
@@ -151,9 +151,9 @@ vec<3, T> cross(vec<3, T> v1, vec<3, T> v2)
 }
 
 template <size_t DIM, typename T>
-std::ostream& operator<<(std::ostream& out, const vec<DIM, T>& v)
+std::ostream& operator<<(std::ostream& out, vec<DIM, T> const& v)
 {
-  for (unsigned int i = 0; i < DIM; i++) out << v[i] << " ";
+  for (auto i = 0; i < DIM; i++) out << v[i] << " ";
   return out;
 }
 
