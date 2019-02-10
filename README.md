@@ -10,8 +10,13 @@ Checklist of project setup:
 a GitHub branch protection rule that requires a pull request review
 from [Code Owners] before merging.
 - The [Pitchfork project layout] is used.
-- ClangFormat
+- The build directory is *build/*.
+- [ClangFormat] is configured with .clang-format
+- Build script in *tools/*.
+- Use `cmake-format -i CMakeLists.txt` to [format CMakeLists.txt].
 
 [Code Owners]: https://help.github.com/articles/about-code-owners/
 [Pitchfork project layout]: https://api.csswg.org/bikeshed/?force=1&url=https://raw.githubusercontent.com/vector-of-bool/pitchfork/develop/data/spec.bs#tld.docs
 [wiki]: https://github.com/ssloy/tinyraytracer/wiki
+[ClangFormat]: https://clang.llvm.org/docs/ClangFormat.html
+[format CMakeLists.txt]: https://pypi.org/project/cmake_format/
