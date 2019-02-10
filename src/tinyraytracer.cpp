@@ -6,35 +6,76 @@
 #include <geometry.hpp>
 #include <limits>
 
-void render()
+struct Sphere
 {
-  const int          width  = 1024;
-  const int          height = 768;
+  Vec3f center;
+  float radius;
+
+  Sphere(Vec3f const& c, float const& r) : center(c), radius(r) {}
+
+  bool ray_intersect(Vec3f const& orig, Vec3f const& dir, float& t0) const
+  {
+    Vec3f L   = center - orig;
+    float tca = L * dir;
+    float d2  = L * L - tca * tca;
+    if (d2 > radius * radius) return false;
+    float thc = sqrt(radius * radius - d2);
+    t0        = tca - thc;
+    float t1  = tca + thc;
+    if (t0 < 0) t0 = t1;
+    return t0 >= 0;
+  }
+};
+
+Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir, Sphere const& sphere)
+{
+  float sphere_dist = std::numeric_limits<float>::max();
+  if (!sphere.ray_intersect(orig, dir, sphere_dist))
+  {
+    return Vec3f(0.2f, 0.7f, 0.8f);  // background color
+  }
+  return Vec3f(0.4f, 0.4f, 0.3f);
+}
+
+void render(Sphere const& sphere)
+{
+  int const          width  = 1024;
+  int const          height = 768;
+  auto               fov    = static_cast<int const>(M_PI / 2.);
   std::vector<Vec3f> framebuffer(width * height);
 
-  for (size_t j = 0; j < height; j++)
+#pragma omp parallel for
+  for (auto j = 0; j < height; j++)
   {
-    for (size_t i = 0; i < width; i++)
+    for (auto i = 0; i < width; i++)
     {
-      framebuffer[i + j * width] =
-          Vec3f(j / float(height), i / float(width), 0);
+      auto x = (2 * (i + 0.5) / static_cast<float>(width) - 1) *
+               tan(fov / 2.f) * width / static_cast<float>(height);
+      auto y =
+          -(2 * (j + 0.5) / static_cast<float>(height) - 1) * tan(fov / 2.f);
+      Vec3f dir                  = Vec3f(x, y, -1).normalize();
+      framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), dir, sphere);
     }
   }
 
   std::ofstream ofs;  // save to file
   ofs.open("./out.ppm");
   ofs << "P6\n" << width << " " << height << "\n255\n";
-  for (size_t i = 0; i < height * width; ++i)
+  for (auto i = 0; i < height * width; ++i)
   {
-    for (size_t j = 0; j < 3; j++)
-    { ofs << (char)(255 * std::max(0.f, std::min(1.f, framebuffer[i][j]))); }
+    for (auto j = 0; j < 3; j++)
+    {
+      ofs << static_cast<char>(255 *
+                               std::max(0.f, std::min(1.f, framebuffer[i][j])));
+    }
   }
   ofs.close();
 }
 
 int main()
 {
-  render();
+  Sphere sphere(Vec3f(-3, 0, -16), 2);
+  render(sphere);
 
   return 0;
 }
