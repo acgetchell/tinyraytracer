@@ -84,6 +84,20 @@ Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir,
   for (auto light : lights)
   {
     Vec3f light_dir = (light.position - point).normalize();
+    // Shadows: if our ray intersects another object, stop
+    float light_distance = (light.position - point).norm();
+
+    Vec3f shadow_orig = light_dir * N < 0
+                            ? point - N * 1e-3f
+                            : point + N * 1e-3f;  // checking if the point lies
+                                                  // in the shadow of the light
+    Vec3f    shadow_pt, shadow_N;
+    Material tmp_material;
+    if (scene_intersect(shadow_orig, light_dir, spheres, shadow_pt, shadow_N,
+                        tmp_material) &&
+        (shadow_pt - shadow_orig).norm() < light_distance)
+      continue;
+
     diffuse_light_intensity += light.intensity * std::max(0.f, light_dir * N);
     specular_light_intensity +=
         powf(std::max(0.f, -reflect(-light_dir, N) * dir),
