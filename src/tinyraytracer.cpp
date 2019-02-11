@@ -6,12 +6,22 @@
 #include <geometry.hpp>
 #include <limits>
 
+struct Material
+{
+  Vec3f diffuse_color;
+  explicit Material(Vec3f const& color) : diffuse_color(color) {}
+  Material() : diffuse_color() {}
+};
+
 struct Sphere
 {
-  Vec3f center;
-  float radius;
+  Vec3f    center;
+  float    radius;
+  Material material;
 
-  Sphere(Vec3f const& c, float const& r) : center(c), radius(r) {}
+  Sphere(Vec3f const& c, float const& r, Material const& m)
+      : center(c), radius(r), material(m)
+  {}
 
   bool ray_intersect(Vec3f const& orig, Vec3f const& dir, float& t0) const
   {
@@ -27,17 +37,42 @@ struct Sphere
   }
 };
 
-Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir, Sphere const& sphere)
+bool scene_intersect(Vec3f const& orig, Vec3f const& dir,
+                     std::vector<Sphere> const& spheres, Vec3f& hit, Vec3f& N,
+                     Material& material)
 {
-  float sphere_dist = std::numeric_limits<float>::max();
-  if (!sphere.ray_intersect(orig, dir, sphere_dist))
+  auto spheres_dist = std::numeric_limits<float>::max();
+  for (auto i = 0; i < spheres.size(); ++i)
+  {
+    float dist_i;
+    if (spheres[i].ray_intersect(orig, dir, dist_i) && dist_i < spheres_dist)
+    {
+      spheres_dist = dist_i;
+      hit          = orig + dir * dist_i;
+      N            = (hit - spheres[i].center).normalize();
+      material     = spheres[i].material;
+    }
+  }
+  return spheres_dist < 1000;
+}
+
+Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir,
+               std::vector<Sphere> const& spheres)
+{
+  Vec3f    point, N;
+  Material material;
+  if (!scene_intersect(orig, dir, spheres, point, N, material))
+
+  //  float sphere_dist = std::numeric_limits<float>::max();
+  //  if (!sphere.ray_intersect(orig, dir, sphere_dist))
   {
     return Vec3f(0.2f, 0.7f, 0.8f);  // background color
   }
-  return Vec3f(0.4f, 0.4f, 0.3f);
+  //  return Vec3f(0.4f, 0.4f, 0.3f);
+  return material.diffuse_color;
 }
 
-void render(Sphere const& sphere)
+void render(std::vector<Sphere> const& spheres)
 {
   int const          width  = 1024;
   int const          height = 768;
@@ -54,7 +89,7 @@ void render(Sphere const& sphere)
       auto y =
           -(2 * (j + 0.5) / static_cast<float>(height) - 1) * tan(fov / 2.f);
       Vec3f dir                  = Vec3f(x, y, -1).normalize();
-      framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), dir, sphere);
+      framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), dir, spheres);
     }
   }
 
@@ -74,8 +109,19 @@ void render(Sphere const& sphere)
 
 int main()
 {
-  Sphere sphere(Vec3f(-3, 0, -16), 2);
-  render(sphere);
+  //  Sphere sphere(Vec3f(-3, 0, -16), 2);
+  //  render(sphere);
+
+  Material ivory(Vec3f(0.4, 0.4, 0.3));
+  Material red_rubber(Vec3f(0.3, 0.1, 0.1));
+
+  std::vector<Sphere> spheres;
+  spheres.emplace_back(Sphere(Vec3f(-3, 0, -16), 2, ivory));
+  spheres.emplace_back(Sphere(Vec3f(-1.0, -1.5, -12), 2, red_rubber));
+  spheres.emplace_back(Sphere(Vec3f(1.5, -0.5, -18), 3, red_rubber));
+  spheres.emplace_back(Sphere(Vec3f(7, 5, -18), 4, ivory));
+
+  render(spheres);
 
   return 0;
 }
