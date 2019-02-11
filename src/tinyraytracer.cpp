@@ -42,15 +42,15 @@ bool scene_intersect(Vec3f const& orig, Vec3f const& dir,
                      Material& material)
 {
   auto spheres_dist = std::numeric_limits<float>::max();
-  for (auto i = 0; i < spheres.size(); ++i)
+  for (auto sphere : spheres)
   {
     float dist_i;
-    if (spheres[i].ray_intersect(orig, dir, dist_i) && dist_i < spheres_dist)
+    if (sphere.ray_intersect(orig, dir, dist_i) && dist_i < spheres_dist)
     {
       spheres_dist = dist_i;
       hit          = orig + dir * dist_i;
-      N            = (hit - spheres[i].center).normalize();
-      material     = spheres[i].material;
+      N            = (hit - sphere.center).normalize();
+      material     = sphere.material;
     }
   }
   return spheres_dist < 1000;
@@ -80,14 +80,14 @@ void render(std::vector<Sphere> const& spheres)
   std::vector<Vec3f> framebuffer(width * height);
 
 #pragma omp parallel for
-  for (auto j = 0; j < height; j++)
+  for (size_t j = 0; j < height; j++)
   {
-    for (auto i = 0; i < width; i++)
+    for (size_t i = 0; i < width; i++)
     {
-      auto x = (2 * (i + 0.5) / static_cast<float>(width) - 1) *
+      auto x = (2 * (i + 0.5f) / static_cast<float>(width) - 1) *
                tan(fov / 2.f) * width / static_cast<float>(height);
       auto y =
-          -(2 * (j + 0.5) / static_cast<float>(height) - 1) * tan(fov / 2.f);
+          -(2 * (j + 0.5f) / static_cast<float>(height) - 1) * tan(fov / 2.f);
       Vec3f dir                  = Vec3f(x, y, -1).normalize();
       framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), dir, spheres);
     }
@@ -96,9 +96,9 @@ void render(std::vector<Sphere> const& spheres)
   std::ofstream ofs;  // save to file
   ofs.open("./out.ppm");
   ofs << "P6\n" << width << " " << height << "\n255\n";
-  for (auto i = 0; i < height * width; ++i)
+  for (size_t i = 0; i < height * width; ++i)
   {
-    for (auto j = 0; j < 3; j++)
+    for (size_t j = 0; j < 3; j++)
     {
       ofs << static_cast<char>(255 *
                                std::max(0.f, std::min(1.f, framebuffer[i][j])));
@@ -112,8 +112,8 @@ int main()
   //  Sphere sphere(Vec3f(-3, 0, -16), 2);
   //  render(sphere);
 
-  Material ivory(Vec3f(0.4, 0.4, 0.3));
-  Material red_rubber(Vec3f(0.3, 0.1, 0.1));
+  Material ivory(Vec3f(0.4f, 0.4f, 0.3f));
+  Material red_rubber(Vec3f(0.3f, 0.1f, 0.1f));
 
   std::vector<Sphere> spheres;
   spheres.emplace_back(Sphere(Vec3f(-3, 0, -16), 2, ivory));
