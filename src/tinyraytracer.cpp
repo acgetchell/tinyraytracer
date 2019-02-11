@@ -63,21 +63,21 @@ Vec3f reflect(Vec3f const& I, Vec3f const& N) { return I - N * 2.f * (I * N); }
 Vec3f refract(Vec3f const& I, Vec3f const& N, float const& refractive_index)
 {
   // Snell's law
-  float cosi = -std::max(-1.f, std::min(1.f, I * N));
-  float etai = 1;
-  float etat = refractive_index;
+  float cos_i = -std::max(-1.f, std::min(1.f, I * N));
+  float eta_i = 1;
+  float eta_t = refractive_index;
   Vec3f n    = N;
-  if (cosi < 0)
+  if (cos_i < 0)
   {
     // if the ray is inside the object, swap the indices and invert the normal
     // to get the correct result
-    cosi = -cosi;
-    std::swap(etai, etat);
+    cos_i = -cos_i;
+    std::swap(eta_i, eta_t);
     n = -N;
   }
-  float eta = etai / etat;
-  float k   = 1 - eta * eta * (1 - cosi * cosi);
-  return k < 0 ? Vec3f(0, 0, 0) : I * eta + n * (eta * cosi - sqrtf(k));
+  float eta = eta_i / eta_t;
+  float k   = 1 - eta * eta * (1 - cos_i * cos_i);
+  return k < 0 ? Vec3f(0, 0, 0) : I * eta + n * (eta * cos_i - sqrtf(k));
 }
 
 bool scene_intersect(Vec3f const& orig, Vec3f const& dir,
