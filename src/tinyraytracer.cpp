@@ -6,6 +6,13 @@
 #include <geometry.hpp>
 #include <limits>
 
+struct Light
+{
+  Vec3f position;
+  float intensity;
+  Light(Vec3f const& p, float const& i) : position(p), intensity(i) {}
+};
+
 struct Material
 {
   Vec3f diffuse_color;
@@ -57,22 +64,26 @@ bool scene_intersect(Vec3f const& orig, Vec3f const& dir,
 }
 
 Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir,
-               std::vector<Sphere> const& spheres)
+               std::vector<Sphere> const& spheres,
+               std::vector<Light> const&  lights)
 {
   Vec3f    point, N;
   Material material;
   if (!scene_intersect(orig, dir, spheres, point, N, material))
-
-  //  float sphere_dist = std::numeric_limits<float>::max();
-  //  if (!sphere.ray_intersect(orig, dir, sphere_dist))
   {
     return Vec3f(0.2f, 0.7f, 0.8f);  // background color
   }
-  //  return Vec3f(0.4f, 0.4f, 0.3f);
-  return material.diffuse_color;
+  float diffuse_light_intensity = 0;
+  for (auto light : lights)
+  {
+    Vec3f light_dir = (light.position - point).normalize();
+    diffuse_light_intensity += light.intensity * std::max(0.f, light_dir * N);
+  }
+  return material.diffuse_color * diffuse_light_intensity;  // sphere color
 }
 
-void render(std::vector<Sphere> const& spheres)
+void render(std::vector<Sphere> const& spheres,
+            std::vector<Light> const&  lights)
 {
   int const          width  = 1024;
   int const          height = 768;
@@ -89,7 +100,8 @@ void render(std::vector<Sphere> const& spheres)
       auto y =
           -(2 * (j + 0.5f) / static_cast<float>(height) - 1) * tan(fov / 2.f);
       Vec3f dir                  = Vec3f(x, y, -1).normalize();
-      framebuffer[i + j * width] = cast_ray(Vec3f(0, 0, 0), dir, spheres);
+      framebuffer[i + j * width] =
+          cast_ray(Vec3f(0, 0, 0), dir, spheres, lights);
     }
   }
 
@@ -109,9 +121,6 @@ void render(std::vector<Sphere> const& spheres)
 
 int main()
 {
-  //  Sphere sphere(Vec3f(-3, 0, -16), 2);
-  //  render(sphere);
-
   Material ivory(Vec3f(0.4f, 0.4f, 0.3f));
   Material red_rubber(Vec3f(0.3f, 0.1f, 0.1f));
 
@@ -121,7 +130,10 @@ int main()
   spheres.emplace_back(Sphere(Vec3f(1.5, -0.5, -18), 3, red_rubber));
   spheres.emplace_back(Sphere(Vec3f(7, 5, -18), 4, ivory));
 
-  render(spheres);
+  std::vector<Light> lights;
+  lights.emplace_back(Light(Vec3f(-20, 20, 20), 1.5));
+
+  render(spheres, lights);
 
   return 0;
 }
