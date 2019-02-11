@@ -66,7 +66,7 @@ Vec3f refract(Vec3f const& I, Vec3f const& N, float const& refractive_index)
   float cos_i = -std::max(-1.f, std::min(1.f, I * N));
   float eta_i = 1;
   float eta_t = refractive_index;
-  Vec3f n    = N;
+  Vec3f n     = N;
   if (cos_i < 0)
   {
     // if the ray is inside the object, swap the indices and invert the normal
@@ -96,7 +96,25 @@ bool scene_intersect(Vec3f const& orig, Vec3f const& dir,
       material     = sphere.material;
     }
   }
-  return spheres_dist < 1000;
+
+  float checkerboard_dist = std::numeric_limits<float>::max();
+  if (fabs(dir.y) > 1e-3f)
+  {
+    float d  = -(orig.y + 4) / dir.y;  // Checkerboard plane is y = -4
+    Vec3f pt = orig + dir * d;
+    if (d > 0 && fabs(pt.x) < 10 && pt.z < -10 && pt.z > -30 &&
+        d < spheres_dist)
+    {
+      checkerboard_dist = d;
+      hit               = pt;
+      N                 = Vec3f(0, 1, 0);
+      material.diffuse_color =
+          (int(.5f * hit.x + 1000) + int(.5f * hit.z)) & 1  // NOLINT
+              ? Vec3f(.3f, .3f, .3f)
+              : Vec3f(.3f, .2f, .1f);
+    }
+  }
+  return std::min(spheres_dist, checkerboard_dist) < 1000;
 }
 
 Vec3f cast_ray(Vec3f const& orig, Vec3f const& dir,
