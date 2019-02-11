@@ -1,5 +1,6 @@
 //
 // Created by Adam Getchell on 2019-02-09.
+// Inspired by https://github.com/ssloy/tinyraytracer
 //
 
 #ifndef TINYRAYTRACER_GEOMETRY_HPP
