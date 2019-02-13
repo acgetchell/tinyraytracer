@@ -3,6 +3,8 @@
 [Dmitry Sokolov]'s [tinyraytracer], with some changes.
 Read the [wiki] for more details, and especially [Ray-Sphere Intersection].
 
+![Raytraced scene](docs/images/out.png)
+
 ### Project Setup
 
 - The default branch is *devel*.
