@@ -10,7 +10,7 @@ struct Light
 {
   Vec3f position;
   float intensity;
-  Light(Vec3f const& p, float const& i) : position(p), intensity(i) {}
+  Light(Vec3f const& p, float const& i) : position{p}, intensity{i} {}
 };
 
 struct Material
@@ -21,16 +21,16 @@ struct Material
   float specular_exponent;
   explicit Material(float const& r, Vec4f const& a, Vec3f const& color,
                     float const& spec)
-      : refractive_index(r)
-      , albedo(a)
-      , diffuse_color(color)
-      , specular_exponent(spec)
+      : refractive_index{r}
+      , albedo{a}
+      , diffuse_color{color}
+      , specular_exponent{spec}
   {}
   Material()
-      : refractive_index(1)
-      , albedo(1, 0, 0, 0)
-      , diffuse_color()
-      , specular_exponent()
+      : refractive_index{1}
+      , albedo{1, 0, 0, 0}
+      , diffuse_color{}
+      , specular_exponent{}
   {}
 };
 
@@ -41,7 +41,7 @@ struct Sphere
   Material material;
 
   Sphere(Vec3f const& c, float const& r, Material const& m)
-      : center(c), radius(r), material(m)
+      : center{c}, radius{r}, material{m}
   {}
 
   bool ray_intersect(Vec3f const& orig, Vec3f const& dir, float& t0) const
