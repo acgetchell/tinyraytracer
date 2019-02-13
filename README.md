@@ -3,6 +3,8 @@
 [Dmitry Sokolov]'s [tinyraytracer], with some changes.
 Read the [wiki] for more details, and especially [Ray-Sphere Intersection].
 
+![Raytraced scene](docs/images/out.png)
+
 ### Project Setup
 
 - The default branch is *devel*.
@@ -23,10 +25,10 @@ from [Code Owners] before merging.
 git clone git@github.com:acgetchell/tinyraytracer.git
 cd tinyraytracer/tools
 ./build.sh
-cd ../build
-./tinyraytracer
 ```
-The output is `out.ppm`.
+This generates an executable `tinyraytracer` with an output of `out.ppm`
+in *build/*. It also runs `ctest`, which checks that the program compiles
+correctly, and that the output file exists.
 
 
 [Dmitry Sokolov]: https://github.com/ssloy

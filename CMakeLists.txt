@@ -58,3 +58,9 @@ enable_cxx_compiler_flag_if_supported("-Werror=return-type")
 include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/src/tinyraytracer.cpp)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+
+# Tests
+enable_testing()
+
+add_test(NAME RayTracing COMMAND $<TARGET_FILE:tinyraytracer>)
+add_test(NAME CheckOutput COMMAND ls out.ppm)
