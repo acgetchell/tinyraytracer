@@ -217,25 +217,25 @@ void render(std::vector<Sphere> const& spheres,
 
 int main()
 {
-  Material ivory(1.0, Vec4f(0.6f, 0.3f, 0.1f, 0.0f), Vec3f(0.4f, 0.4f, 0.3f),
+  Material ivory(1.0, Vec4f{0.6f, 0.3f, 0.1f, 0.0f}, Vec3f{0.4f, 0.4f, 0.3f},
                  50.);
-  Material glass(1.5, Vec4f(0.0, 0.5, 0.1f, 0.8f), Vec3f(0.6f, 0.7f, 0.8f),
+  Material glass(1.5, Vec4f{0.0, 0.5, 0.1f, 0.8f}, Vec3f{0.6f, 0.7f, 0.8f},
                  125.);
-  Material red_rubber(1.0, Vec4f(0.9f, 0.1f, 0.0f, 0.0f),
-                      Vec3f(0.3f, 0.1f, 0.1f), 10.);
-  Material mirror(1.0, Vec4f(0.0f, 10.0f, 0.8f, 0.0), Vec3f(1.0, 1.0, 1.0),
+  Material red_rubber(1.0, Vec4f{0.9f, 0.1f, 0.0f, 0.0f},
+                      Vec3f{0.3f, 0.1f, 0.1f}, 10.);
+  Material mirror(1.0, Vec4f{0.0f, 10.0f, 0.8f, 0.0}, Vec3f{1.0, 1.0, 1.0},
                   1425.);
 
   std::vector<Sphere> spheres;
-  spheres.emplace_back(Sphere(Vec3f(-3, 0, -16), 2, ivory));
-  spheres.emplace_back(Sphere(Vec3f(-1.0, -1.5, -12), 2, glass));
-  spheres.emplace_back(Sphere(Vec3f(1.5, -0.5, -18), 3, red_rubber));
-  spheres.emplace_back(Sphere(Vec3f(7, 5, -18), 4, mirror));
+  spheres.emplace_back(Sphere{Vec3f{-3, 0, -16}, 2, ivory});
+  spheres.emplace_back(Sphere{Vec3f{-1.0, -1.5, -12}, 2, glass});
+  spheres.emplace_back(Sphere{Vec3f{1.5, -0.5, -18}, 3, red_rubber});
+  spheres.emplace_back(Sphere{Vec3f{7, 5, -18}, 4, mirror});
 
   std::vector<Light> lights;
-  lights.emplace_back(Light(Vec3f(-20, 20, 20), 1.5));
-  lights.emplace_back(Light(Vec3f(30, 50, -25), 1.8f));
-  lights.emplace_back(Light(Vec3f(30, 20, 30), 1.7f));
+  lights.emplace_back(Light{Vec3f{-20, 20, 20}, 1.5});
+  lights.emplace_back(Light{Vec3f{30, 50, -25}, 1.8f});
+  lights.emplace_back(Light{Vec3f{30, 20, 30}, 1.7f});
 
   render(spheres, lights);
 
