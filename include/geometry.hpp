@@ -16,7 +16,7 @@ struct vec
 {
   vec()
   {
-    for (auto i = DIM; i--; data_[i] = T())
+    for (auto i = DIM; i--; data_[i] = T{})
       ;
   }
   T& operator[](size_t const i)
@@ -42,8 +42,8 @@ using Vec4f = vec<4, float>;
 template <typename T>
 struct vec<2, T>
 {
-  vec() : x(T()), y(T()) {}
-  vec(T X, T Y) : x(X), y(Y) {}
+  vec() : x{T{}}, y{T{}} {}
+  vec(T X, T Y) : x{X}, y{Y} {}
   template <class U>
   vec<2, T>(vec<2, U> const& v);
   T& operator[](size_t const i)
@@ -63,8 +63,8 @@ struct vec<2, T>
 template <typename T>
 struct vec<3, T>
 {
-  vec() : x(T()), y(T()), z(T()) {}
-  vec(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
+  vec() : x{T{}}, y{T{}}, z{T{}} {}
+  vec(T X, T Y, T Z) : x{X}, y{Y}, z{Z} {}
   T& operator[](size_t const i)
   {
     assert(i < 3);
@@ -88,8 +88,8 @@ struct vec<3, T>
 template <typename T>
 struct vec<4, T>
 {
-  vec() : x(T()), y(T()), z(T()), w(T()) {}
-  vec(T X, T Y, T Z, T W) : x(X), y(Y), z(Z), w(W) {}
+  vec() : x{T{}}, y{T{}}, z{T{}}, w{T{}} {}
+  vec(T X, T Y, T Z, T W) : x{X}, y{Y}, z{Z}, w{W} {}
   T& operator[](size_t const i)
   {
     assert(i < 4);
