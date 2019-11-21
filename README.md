@@ -1,4 +1,5 @@
 ## Understandable RayTracing
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/acgetchell/tinyraytracer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/acgetchell/tinyraytracer/context:cpp)
 
 [Dmitry Sokolov]'s [tinyraytracer], with some changes.
 Read the [wiki] for more details, and especially [Ray-Sphere Intersection].
